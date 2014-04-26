@@ -7,35 +7,6 @@ $end_time = "";
 $duration = "";
 $request_size = "";
 
-function http_post($url, $content_type, $headers, $data) {
-
-	$parsed_url = parse_url($url);
-	$scheme = $parsed_url["scheme"] == "https" ? "ssl" : "http";
-	$port = $parsed_url["scheme"] == "https" ? 443 : 80;
-	$host = $parsed_url["host"];	
-
-	$content_length = strlen($data);
-    $fp = fsockopen($scheme . "://" . $host, $port);
-    fputs($fp, "POST $url HTTP/1.1\r\n");
-    fputs($fp, "Host: $host\r\n");
-
-    foreach ($headers as $header) {
-    	//echo $header . "<br/>";
-    	fputs($fp, $header . "\r\n");
-    }
-
-    fputs($fp, "Content-Length: $content_length\r\n");
-    fputs($fp, "Connection: close\r\n\r\n");
-    fputs($fp, $data, $content_length);
- 
-    $http_response = stream_get_contents($fp);
-
-    fclose($fp);
- 
-    list($headers, $body) = explode("\r\n\r\n", $http_response, 2);
-    return $http_response;
-}
-
 if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST') {
 
 	//$data = ['data' => 'this', 'data2' => 'that'];
@@ -126,3 +97,32 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST') {
 </body>
 </html>
 
+<?php
+function http_post($url, $content_type, $headers, $data) {
+
+	$parsed_url = parse_url($url);
+	$scheme = $parsed_url["scheme"] == "https" ? "ssl" : "http";
+	$port = $parsed_url["scheme"] == "https" ? 443 : 80;
+	$host = $parsed_url["host"];	
+
+	$content_length = strlen($data);
+    $fp = fsockopen($scheme . "://" . $host, $port);
+    fputs($fp, "POST $url HTTP/1.1\r\n");
+    fputs($fp, "Host: $host\r\n");
+
+    foreach ($headers as $header) {
+    	//echo $header . "<br/>";
+    	fputs($fp, $header . "\r\n");
+    }
+
+    fputs($fp, "Content-Length: $content_length\r\n");
+    fputs($fp, "Connection: close\r\n\r\n");
+    fputs($fp, $data, $content_length);
+ 
+    $http_response = stream_get_contents($fp);
+
+    fclose($fp);
+ 
+    list($headers, $body) = explode("\r\n\r\n", $http_response, 2);
+    return $http_response;
+}
